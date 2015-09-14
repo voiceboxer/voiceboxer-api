@@ -1,0 +1,33 @@
+{
+  "name": "voiceboxer-api-js-client",
+  "version": "1.0.0",
+  "description": "A light-weight javascript wrapper for the VoiceBoxer API",
+  "main": "index.js",
+  "scripts": {
+    "watch": "wzrd demo.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/voiceboxer/voiceboxer-api-js-client.git"
+  },
+  "keywords": [
+    "voiceboxer",
+    "api",
+    "client",
+    "wrapper"
+  ],
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/voiceboxer/voiceboxer-api-js-client#readme",
+  "dependencies": {
+    "is-ok": "^1.0.1",
+    "socket.io-client": "^1.3.6",
+    "thunky": "^0.1.0",
+    "url-join": "0.0.1",
+    "xhr": "^2.0.4"
+  },
+  "devDependencies": {
+    "browserify": "^11.0.1",
+    "wzrd": "^1.3.1"
+  }
+}
