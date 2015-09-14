@@ -90,7 +90,6 @@ module.exports = function(options) {
 			[
 				'register',
 				'unregister',
-				'status.countdown',
 				'status.start',
 				'status.pause',
 				'status.stop',
