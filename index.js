@@ -18,6 +18,13 @@ module.exports = function(options) {
 		if(err) that.emit('error', err);
 	};
 
+	var filter = function(options) {
+		return {
+			access_token: options.access_token,
+			refresh_token: options.refresh_token
+		};
+	};
+
 	var request = function(method, path, headers, body, callback) {
 		if(body) body = { data: body };
 
@@ -35,7 +42,7 @@ module.exports = function(options) {
 	};
 
 	var authenticate = thunky(function(callback) {
-		if(options.access_token) return callback(null, options.access_token);
+		if(options.access_token) return callback(null, filter(options));
 
 		var body = {
 			client_id: options.client_id,
@@ -45,11 +52,13 @@ module.exports = function(options) {
 
 		request('post', '/users/login', null, body, function(err, body) {
 			if(err) return callback(err);
-			callback(null, body.access_token);
+			callback(null, filter(body));
 		});
 	});
 
 	var that = new events.EventEmitter();
+
+	that.authenticate = authenticate;
 
 	that.request = function(method, path, body, callback) {
 		if(!callback && typeof body === 'function') {
@@ -59,7 +68,7 @@ module.exports = function(options) {
 
 		authenticate(function(err, token) {
 			if(err) return callback(err);
-			request(method, path, { Authorization: 'Bearer ' + token }, body, callback);
+			request(method, path, { Authorization: 'Bearer ' + token.access_token }, body, callback);
 		});
 	};
 
@@ -72,7 +81,7 @@ module.exports = function(options) {
 				reconnection: false,
 				query: qs.stringify({
 					literalId: literalId,
-					token: token
+					token: token.access_token
 				})
 			});
 
