@@ -5,8 +5,9 @@ var xhr = require('xhr');
 var thunky = require('thunky');
 var urlJoin = require('url-join');
 var isOk = require('is-ok');
+var extend = require('xtend');
 
-module.exports = function(options) {
+var create = function(options) {
 	options = options || {};
 
 	var api = options.api || 'api.voiceboxer.com';
@@ -137,4 +138,12 @@ module.exports = function(options) {
 	});
 
 	return that;
+};
+
+module.exports = create;
+module.exports.defaults = function(defaults) {
+	return function(options) {
+		options = extend(defaults || {}, options);
+		return create(options);
+	};
 };
