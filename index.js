@@ -27,10 +27,11 @@ var create = function(options) {
 	};
 
 	var request = function(method, path, headers, body, callback) {
+		if(!method) method = 'get';
 		if(body) body = { data: body };
 
 		xhr({
-			method: method,
+			method: method.toUpperCase(),
 			url: urlJoin(api, path),
 			headers: headers,
 			json: body
