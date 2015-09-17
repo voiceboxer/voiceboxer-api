@@ -68,6 +68,8 @@ var create = function(options) {
 			body = undefined;
 		}
 
+		callback = callback || onerror;
+
 		authenticate(function(err, token) {
 			if(err) return callback(err);
 			request(method, path, { Authorization: 'Bearer ' + token.access_token }, body, callback);
