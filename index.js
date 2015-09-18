@@ -83,6 +83,7 @@ var create = function(options) {
 			var updated = 0;
 			var socket = io(air, {
 				reconnection: false,
+				multiplex: false,
 				query: qs.stringify({
 					literalId: literalId,
 					token: token.access_token
@@ -116,13 +117,22 @@ var create = function(options) {
 				'language'
 			].forEach(function(name) {
 				socket.on(name, function(message) {
+					that.emit(name, message);
+
 					var ts = new Date(message.updatedAt);
 					if(ts < updated) return;
-
 					updated = ts;
-					that.emit(name, message);
+
 					that.emit('update', message);
 				});
+			});
+
+			socket.on('chat', function(message) {
+				that.emit('chat', message);
+			});
+
+			socket.on('chat.booth', function(message) {
+				that.emit('chat.booth', message);
 			});
 
 			sockets[literalId] = socket;
