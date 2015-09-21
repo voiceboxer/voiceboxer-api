@@ -110,6 +110,7 @@ var create = function(options) {
 				'slide',
 				'presenter',
 				'presenter.available',
+				'presenter.slowdown',
 				'interpreter.available',
 				'interpreter.switch.request',
 				'interpreter.switch.approve',
