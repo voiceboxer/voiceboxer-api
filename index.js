@@ -4,8 +4,11 @@ var io = require('socket.io-client');
 var xhr = require('xhr');
 var thunky = require('thunky');
 var urlJoin = require('url-join');
+var appendQuery = require('append-query');
 var isOk = require('is-ok');
 var extend = require('xtend');
+
+var xdr = xhr.XDomainRequest === window.XDomainRequest;
 
 var create = function(options) {
 	options = options || {};
@@ -26,12 +29,34 @@ var create = function(options) {
 		};
 	};
 
-	var request = function(method, path, headers, body, callback) {
-		if(!method) method = 'get';
+	var request = function(method, path, access_token, body, callback) {
+		if(!method) method = 'GET';
+		else method = method = method.toUpperCase();
+
 		if(body) body = { data: body };
 
+		var headers = null;
+
+		if(xdr) {
+			var query = {};
+
+			if(access_token) {
+				query.access_token = access_token;
+			}
+			if(method !== 'GET') {
+				query.method = method;
+				query.json = 1;
+				method = 'POST';
+			}
+
+			path = appendQuery(path, query);
+		} else {
+			headers = { Authorization: 'Bearer ' + access_token };
+		}
+
 		xhr({
-			method: method.toUpperCase(),
+			useXDR: true,
+			method: method,
 			url: urlJoin(api, path),
 			headers: headers,
 			json: body
@@ -72,7 +97,7 @@ var create = function(options) {
 
 		authenticate(function(err, token) {
 			if(err) return callback(err);
-			request(method, path, { Authorization: 'Bearer ' + token.access_token }, body, callback);
+			request(method, path, token.access_token, body, callback);
 		});
 	};
 

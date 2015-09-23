@@ -20,6 +20,7 @@
   "license": "MIT",
   "homepage": "https://bitbucket.org/voiceboxer/voiceboxer-api-js-client#readme",
   "dependencies": {
+    "append-query": "^1.1.0",
     "is-ok": "^1.0.1",
     "socket.io-client": "^1.3.6",
     "thunky": "^0.1.0",
