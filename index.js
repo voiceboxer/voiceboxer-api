@@ -15,6 +15,7 @@ var create = function(options) {
 
 	var api = options.api || 'api.voiceboxer.com';
 	var air = options.air || 'air.voiceboxer.com';
+	var fil = options.fil || 'fil.voiceboxer.com';
 
 	var sockets = {};
 
@@ -70,6 +71,7 @@ var create = function(options) {
 
 	var authenticate = thunky(function(callback) {
 		if(options.access_token) return callback(null, filter(options));
+		if(!options.client_id) return callback(null, null);
 
 		var body = {
 			client_id: options.client_id,
@@ -168,6 +170,31 @@ var create = function(options) {
 	that.unregister = function(literalId) {
 		var socket = sockets[literalId];
 		if(socket) socket.disconnect();
+	};
+
+	that.upload = function(body, options, callback) {
+		if(!callback && typeof options === 'function') {
+			callback = options;
+			options = null;
+		}
+
+		options = options || {};
+		callback = callback || noop;
+
+		var url = urlJoin(fil, '/upload');
+		if(options.filename) url = appendQuery(url, { filename: options.filename });
+
+		xhr({
+			method: 'POST',
+			url: url,
+			body: body
+		}, function(err, response, body) {
+			if(err) return callback(err);
+			if(!isOk(response, callback)) return;
+
+			body = JSON.parse(body);
+			callback(null, body);
+		});
 	};
 
 	['get', 'post', 'put', 'del', 'patch'].forEach(function(method) {
