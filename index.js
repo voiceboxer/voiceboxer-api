@@ -71,7 +71,7 @@ var create = function(options) {
 
 	var authenticate = thunky(function(callback) {
 		if(options.access_token) return callback(null, filter(options));
-		if(!options.client_id) return callback(null, null);
+		if(!options.client_id || !options.email || !options.password) return callback(null, null);
 
 		var body = {
 			client_id: options.client_id,
