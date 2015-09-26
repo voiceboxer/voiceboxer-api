@@ -51,7 +51,7 @@ var create = function(options) {
 			}
 
 			path = appendQuery(path, query);
-		} else {
+		} else if(access_token) {
 			headers = { Authorization: 'Bearer ' + access_token };
 		}
 
@@ -99,13 +99,14 @@ var create = function(options) {
 
 		authenticate(function(err, token) {
 			if(err) return callback(err);
-			request(method, path, token.access_token, body, callback);
+			request(method, path, token && token.access_token, body, callback);
 		});
 	};
 
 	that.register = function(literalId) {
 		authenticate(function(err, token) {
 			if(err) return onerror(err);
+			if(!token) return onerror(new Error('Token missing'));
 
 			var updated = 0;
 			var socket = io(air, {
