@@ -188,6 +188,11 @@ var create = function(options) {
 		options = options || {};
 		callback = callback || noop;
 
+		var onresponse = function(err) {
+			if(err) that.emit('upload_error', err);
+			callback.apply(null, arguments);
+		};
+
 		var url = urlJoin(fil, '/upload');
 		if(options.filename) url = appendQuery(url, { filename: options.filename });
 
@@ -196,11 +201,11 @@ var create = function(options) {
 			url: url,
 			body: body
 		}, function(err, response, body) {
-			if(err) return callback(err);
-			if(!isOk(response, callback)) return;
+			if(err) return onresponse(err);
+			if(!isOk(response, onresponse)) return;
 
 			body = JSON.parse(body);
-			callback(null, body);
+			onresponse(null, body);
 		});
 	};
 
