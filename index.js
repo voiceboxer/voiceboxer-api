@@ -17,11 +17,8 @@ var create = function(options) {
 	var air = options.air || 'air.voiceboxer.com';
 	var fil = options.fil || 'fil.voiceboxer.com';
 
+	var noop = function() {};
 	var sockets = {};
-
-	var onerror = function(err) {
-		if(err) that.emit('error', err);
-	};
 
 	var filter = function(options) {
 		return {
@@ -95,15 +92,24 @@ var create = function(options) {
 			body = undefined;
 		}
 
-		callback = callback || onerror;
+		callback = callback || noop;
+
+		var onresponse = function(err) {
+			if(err) that.emit('api_error', err);
+			callback.apply(null, arguments);
+		};
 
 		authenticate(function(err, token) {
-			if(err) return callback(err);
-			request(method, path, token && token.access_token, body, callback);
+			if(err) return onresponse(err);
+			request(method, path, token && token.access_token, body, onresponse);
 		});
 	};
 
 	that.register = function(literalId) {
+		var onerror = function(err) {
+			that.emit('air_error', err);
+		};
+
 		authenticate(function(err, token) {
 			if(err) return onerror(err);
 			if(!token) return onerror(new Error('Token missing'));
