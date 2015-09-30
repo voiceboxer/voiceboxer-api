@@ -107,7 +107,7 @@ var create = function(options) {
 
 	that.register = function(literalId) {
 		var onerror = function(err) {
-			that.emit('air_error', err);
+			that.emit('socket_error', err);
 		};
 
 		authenticate(function(err, token) {
