@@ -32,6 +32,7 @@ var create = function(options) {
 		else method = method = method.toUpperCase();
 
 		if(body) body = { data: body };
+		else body = {};
 
 		var headers = null;
 
