@@ -10,6 +10,10 @@ var extend = require('xtend');
 
 var xdr = xhr.XDomainRequest === window.XDomainRequest;
 
+var bearer = function(access_token) {
+	return 'Bearer ' + access_token;
+};
+
 var create = function(options) {
 	options = options || {};
 
@@ -37,20 +41,25 @@ var create = function(options) {
 		var headers = null;
 
 		if(xdr) {
-			var query = {};
+			var query = {
+				_headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				}
+			};
 
 			if(access_token) {
-				query.access_token = access_token;
+				query._headers.Authorization = bearer(access_token);
 			}
 			if(method !== 'GET') {
-				query.method = method;
-				query.json = 1;
+				query._method = method;
 				method = 'POST';
 			}
 
+			query._headers = JSON.stringify(query._headers);
 			path = appendQuery(path, query);
 		} else if(access_token) {
-			headers = { Authorization: 'Bearer ' + access_token };
+			headers = { Authorization: bearer(access_token) };
 		}
 
 		xhr({
