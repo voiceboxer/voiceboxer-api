@@ -33,7 +33,7 @@ var create = function(options) {
 
 	var request = function(method, path, access_token, body, callback) {
 		if(!method) method = 'GET';
-		else method = method = method.toUpperCase();
+		else method = method.toUpperCase();
 
 		if(body) body = { data: body };
 		else body = {};
