@@ -129,8 +129,15 @@ var create = function(options) {
 		};
 
 		authenticate(function(err, token) {
-			if(err) return onerror(err);
-			if(!token) return onerror(new Error('Token missing'));
+			if(err) {
+				callback(err);
+				return onerror(err);
+			}
+			if(!token) {
+				err = new Error('Token missing');
+				callback(err);
+				return onerror(err);
+			}
 
 			var updated = 0;
 			var socket = io(air, {
