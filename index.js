@@ -115,7 +115,9 @@ var create = function(options) {
 		});
 	};
 
-	that.register = function(literalId) {
+	that.register = function(literalId, options) {
+		options = options || {};
+
 		var onerror = function(err) {
 			that.emit('socket_error', err);
 		};
@@ -130,7 +132,9 @@ var create = function(options) {
 				multiplex: false,
 				query: qs.stringify({
 					literalId: literalId,
-					token: token.access_token
+					token: token.access_token,
+					status: options.status,
+					language: options.language
 				})
 			});
 
