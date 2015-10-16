@@ -10,6 +10,7 @@ var extend = require('xtend');
 
 var xdr = xhr.XDomainRequest === window.XDomainRequest;
 
+var noop = function() {};
 var bearer = function(access_token) {
 	return 'Bearer ' + access_token;
 };
@@ -21,7 +22,6 @@ var create = function(options) {
 	var air = options.air || 'air.voiceboxer.com';
 	var fil = options.fil || 'fil.voiceboxer.com';
 
-	var noop = function() {};
 	var sockets = {};
 
 	var filter = function(options) {
@@ -115,8 +115,14 @@ var create = function(options) {
 		});
 	};
 
-	that.register = function(literalId, options) {
+	that.register = function(literalId, options, callback) {
+		if(!callback && typeof options === 'function') {
+			callback = options;
+			options = null;
+		}
+
 		options = options || {};
+		callback = callback || noop;
 
 		var onerror = function(err) {
 			that.emit('socket_error', err);
@@ -138,10 +144,23 @@ var create = function(options) {
 				})
 			});
 
+			var onfinish = function(err) {
+				socket.removeListener('connect', onfinish);
+				socket.removeListener('connect_error', onfinish);
+				socket.removeListener('error', onfinish);
+
+				callback(err);
+			};
+
+			socket.on('connect', onfinish);
+			socket.on('connect_error', onfinish);
+			socket.on('error', onfinish);
+
 			socket.on('connect', function() {
 				that.emit('connect', literalId);
 			});
 
+			socket.on('connect_error', onerror);
 			socket.on('error', onerror);
 
 			socket.on('disconnect', function() {
