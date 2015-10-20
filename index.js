@@ -170,9 +170,9 @@ var create = function(options) {
 			socket.on('connect_error', onerror);
 			socket.on('error', onerror);
 
-			socket.on('disconnect', function() {
+			socket.on('disconnect', function(reason) {
 				delete sockets[literalId];
-				that.emit('disconnect', literalId);
+				that.emit('disconnect', literalId, reason);
 			});
 
 			[
