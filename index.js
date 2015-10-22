@@ -228,24 +228,32 @@ var create = function(options) {
 		options = options || {};
 		callback = callback || noop;
 
-		var onresponse = function(err) {
-			if(err) that.emit('upload_error', err);
-			callback.apply(null, arguments);
-		};
+		authenticate(function(err, token) {
+			if(err) return callback(err);
+			if(!token) return callback(new Error('Token missing'));
 
-		var url = urlJoin(fil, '/upload');
-		if(options.filename) url = appendQuery(url, { filename: options.filename });
+			var onresponse = function(err) {
+				if(err) that.emit('upload_error', err);
+				callback.apply(null, arguments);
+			};
 
-		xhr({
-			method: 'POST',
-			url: url,
-			body: body
-		}, function(err, response, body) {
-			if(err) return onresponse(err);
-			if(!isOk(response, onresponse)) return;
+			var url = urlJoin(fil, '/upload');
+			if(options.filename) url = appendQuery(url, { filename: options.filename });
 
-			body = JSON.parse(body);
-			onresponse(null, body);
+			xhr({
+				method: 'POST',
+				url: url,
+				body: body,
+				headers: {
+					Authorization: bearer(token.access_token)
+				}
+			}, function(err, response, body) {
+				if(err) return onresponse(err);
+				if(!isOk(response, onresponse)) return;
+
+				body = JSON.parse(body);
+				onresponse(null, body);
+			});
 		});
 	};
 
