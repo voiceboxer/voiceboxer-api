@@ -257,7 +257,7 @@ var create = function(options) {
 		});
 	};
 
-	['get', 'post', 'put', 'del', 'patch'].forEach(function(method) {
+	['get', 'post', 'put', 'delete', 'patch'].forEach(function(method) {
 		that[method] = function(path, body, callback) {
 			that.request(method, path, body, callback);
 		};
