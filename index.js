@@ -182,6 +182,7 @@ var create = function(options) {
 				'status.pause',
 				'status.stop',
 				'slide',
+				'floor.queue',
 				'presenter',
 				'presenter.available',
 				'presenter.slowdown',
