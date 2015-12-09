@@ -1,4 +1,3 @@
 node_modules
 .DS_Store
-demo.js
-demo.html
+test/run-development.sh

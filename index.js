@@ -76,6 +76,28 @@ var create = function(options) {
 		});
 	};
 
+	var connect = function(query, callback) {
+		var socket = io(air, {
+			reconnection: false,
+			multiplex: false,
+			query: qs.stringify(query)
+		});
+
+		var onfinish = function(err) {
+			socket.removeListener('connect', onfinish);
+			socket.removeListener('connect_error', onfinish);
+			socket.removeListener('error', onfinish);
+
+			callback(err, socket);
+		};
+
+		socket.on('connect', onfinish);
+		socket.on('connect_error', onfinish);
+		socket.on('error', onfinish);
+
+		return socket;
+	};
+
 	var authenticate = thunky(function(callback) {
 		if(options.access_token) return callback(null, filter(options));
 		if(!options.client_id || !options.email || !options.password) return callback(null, null);
@@ -115,6 +137,18 @@ var create = function(options) {
 		});
 	};
 
+	that.connect = function(query, callback) {
+		if(!callback && typeof query === 'function') {
+			callback = query;
+			query = null;
+		}
+
+		query = query || {};
+		callback = callback || noop;
+
+		return connect(query, callback);
+	};
+
 	that.register = function(literalId, options, callback) {
 		if(!callback && typeof options === 'function') {
 			callback = options;
@@ -140,28 +174,12 @@ var create = function(options) {
 			}
 
 			var updated = 0;
-			var socket = io(air, {
-				reconnection: false,
-				multiplex: false,
-				query: qs.stringify({
-					literalId: literalId,
-					token: token.access_token,
-					status: options.status,
-					language: options.language
-				})
-			});
-
-			var onfinish = function(err) {
-				socket.removeListener('connect', onfinish);
-				socket.removeListener('connect_error', onfinish);
-				socket.removeListener('error', onfinish);
-
-				callback(err);
-			};
-
-			socket.on('connect', onfinish);
-			socket.on('connect_error', onfinish);
-			socket.on('error', onfinish);
+			var socket = connect({
+				literalId: literalId,
+				token: token.access_token,
+				status: options.status,
+				language: options.language
+			}, callback);
 
 			socket.on('connect', function() {
 				that.emit('connect', literalId);
