@@ -1,5 +1,5 @@
 {
-  "name": "voiceboxer-api-js-client",
+  "name": "voiceboxer-api",
   "version": "1.12.0",
   "description": "A light-weight javascript wrapper for the VoiceBoxer API",
   "main": "index.js",
@@ -10,17 +10,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/voiceboxer/voiceboxer-api-js-client.git"
+    "url": "https://github.com/voiceboxer/voiceboxer-api.git"
   },
   "keywords": [
     "voiceboxer",
     "api",
-    "client",
     "wrapper"
   ],
   "author": "",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/voiceboxer/voiceboxer-api-js-client#readme",
+  "homepage": "https://github.com/voiceboxer/voiceboxer-api",
   "dependencies": {
     "append-query": "^1.1.0",
     "is-ok": "^1.0.1",

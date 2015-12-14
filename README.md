@@ -1,8 +1,8 @@
-# voiceboxer-api-js-client
+# voiceboxer-api
 
 A light-weight javascript wrapper for the VoiceBoxer API.
 
-	npm install voiceboxer-api-js-client
+	npm install voiceboxer-api
 
 # Usage
 
