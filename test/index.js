@@ -132,12 +132,12 @@ test('connect', function(t) {
 	client.connect(function(err, socket) {
 		t.error(err);
 
-		socket.on('pong', function(message) {
+		socket.on('drop', function(message) {
 			t.ok(message.timestamp, 'has timestamp ' + message.timestamp);
 			t.end();
 		});
 
-		socket.emit('ping');
+		socket.emit('drip');
 	});
 });
 
