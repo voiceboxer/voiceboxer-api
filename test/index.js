@@ -131,6 +131,23 @@ test('connect', function(t) {
 
 	client.connect(function(err, socket) {
 		t.error(err);
+		t.equals(socket.io.engine.transport.name, 'polling');
+
+		socket.on('drop', function(message) {
+			t.ok(message.timestamp, 'has timestamp ' + message.timestamp);
+			t.end();
+		});
+
+		socket.emit('drip');
+	});
+});
+
+test('connect with transport option', function(t) {
+	var client = create();
+
+	client.connect(null, { transports: ['websocket'] }, function(err, socket) {
+		t.error(err);
+		t.equals(socket.io.engine.transport.name, 'websocket');
 
 		socket.on('drop', function(message) {
 			t.ok(message.timestamp, 'has timestamp ' + message.timestamp);

@@ -76,12 +76,16 @@ var create = function(options) {
 		});
 	};
 
-	var connect = function(query, callback) {
-		var socket = io(air, {
+	var connect = function(query, options, callback) {
+		var connection = {
 			reconnection: false,
 			multiplex: false,
 			query: qs.stringify(query)
-		});
+		};
+
+		if(options.transports) connection.transports = options.transports;
+
+		var socket = io(air, connection);
 
 		var onfinish = function(err) {
 			socket.removeListener('connect', onfinish);
@@ -137,16 +141,21 @@ var create = function(options) {
 		});
 	};
 
-	that.connect = function(query, callback) {
+	that.connect = function(query, options, callback) {
 		if(!callback && typeof query === 'function') {
 			callback = query;
 			query = null;
 		}
+		if(!callback && typeof options === 'function') {
+			callback = options;
+			options = null;
+		}
 
 		query = query || {};
+		options = options || {};
 		callback = callback || noop;
 
-		return connect(query, callback);
+		return connect(query, options, callback);
 	};
 
 	that.register = function(literalId, options, callback) {
@@ -179,7 +188,7 @@ var create = function(options) {
 				token: token.access_token,
 				status: options.status,
 				language: options.language
-			}, callback);
+			}, options.connection || {}, callback);
 
 			socket.on('connect', function() {
 				that.emit('connect', literalId);
