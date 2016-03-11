@@ -1,5 +1,6 @@
 var fs = require('fs');
 var test = require('tape');
+var urlJoin = require('url-join');
 
 var voiceboxer = require('../').defaults({
 	api: process.env.VOICEBOXER_API_URL,
@@ -114,15 +115,26 @@ test('admin create presentation', function(t) {
 
 test('api error', function(t) {
 	var client = create();
+	var url = urlJoin(process.env.VOICEBOXER_API_URL, '/does/not/exist');
 
-	t.plan(2);
+	t.plan(12);
 
 	client.on('api_error', function(err) {
 		t.ok(err, err.message);
+		t.equals(err.statusCode, 404);
+		t.equals(err.method, 'GET');
+		t.equals(err.url, url);
+		t.ok(err.body);
+		t.ok(err.headers);
 	});
 
-	client.get('/does/not/exists', function(err) {
+	client.get('/does/not/exist', function(err) {
 		t.ok(err, err.message);
+		t.equals(err.statusCode, 404);
+		t.equals(err.method, 'GET');
+		t.equals(err.url, url);
+		t.ok(err.body);
+		t.ok(err.headers);
 	});
 });
 

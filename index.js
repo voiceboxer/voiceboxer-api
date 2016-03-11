@@ -11,8 +11,26 @@ var extend = require('xtend');
 var xdr = xhr.XDomainRequest === window.XDomainRequest;
 
 var noop = function() {};
+
 var bearer = function(access_token) {
 	return 'Bearer ' + access_token;
+};
+
+var onerror = function(method, url, response, callback) {
+	url = url.split('?')[0];
+
+	return !isOk(response, function(err) {
+		if(err) {
+			var body = err.body && err.body.message;
+			body = body ? (' [' + body + ']') : '';
+
+			err.message += (': ' + method + ' ' + url + body);
+			err.method = method;
+			err.url = url;
+
+			callback(err);
+		}
+	});
 };
 
 var create = function(options) {
@@ -39,6 +57,7 @@ var create = function(options) {
 		else body = {};
 
 		var headers = null;
+		var url = urlJoin(api, path);
 
 		if(xdr) {
 			var query = {
@@ -65,12 +84,12 @@ var create = function(options) {
 		xhr({
 			useXDR: true,
 			method: method,
-			url: urlJoin(api, path),
+			url: url,
 			headers: headers,
 			json: body
 		}, function(err, response, body) {
 			if(err) return callback(err);
-			if(!isOk(response, callback)) return;
+			if(onerror(method, url, response, callback)) return;
 
 			callback(null, body);
 		});
@@ -277,7 +296,7 @@ var create = function(options) {
 				}
 			}, function(err, response, body) {
 				if(err) return onresponse(err);
-				if(!isOk(response, onresponse)) return;
+				if(onerror('POST', url, response, onresponse)) return;
 
 				body = JSON.parse(body);
 				onresponse(null, body);
