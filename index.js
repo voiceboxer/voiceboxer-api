@@ -249,12 +249,12 @@ var create = function(options) {
 				});
 			});
 
-			socket.on('chat', function(message) {
-				that.emit('chat', message);
+			socket.on('chat.group', function(message) {
+				that.emit('chat.group', message);
 			});
 
-			socket.on('chat.booth', function(message) {
-				that.emit('chat.booth', message);
+			socket.on('chat.channel', function(message) {
+				that.emit('chat.channel', message);
 			});
 
 			sockets[literalId] = socket;
