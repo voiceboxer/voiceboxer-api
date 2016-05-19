@@ -36,9 +36,9 @@ var onerror = function(method, url, response, callback) {
 var create = function(options) {
 	options = options || {};
 
-	var api = options.api || 'api.voiceboxer.com';
-	var air = options.air || 'air.voiceboxer.com';
-	var fil = options.fil || 'fil.voiceboxer.com';
+	var api = options.api || 'https://api.voiceboxer.com';
+	var air = options.air || 'https://air.voiceboxer.com';
+	var fil = options.fil || 'https://fil.voiceboxer.com';
 
 	var sockets = {};
 
@@ -77,6 +77,7 @@ var create = function(options) {
 
 			query._headers = JSON.stringify(query._headers);
 			path = appendQuery(path, query);
+			url = urlJoin(api, path);
 		} else if(access_token) {
 			headers = { Authorization: bearer(access_token) };
 		}
