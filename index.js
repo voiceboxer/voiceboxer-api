@@ -97,6 +97,12 @@ var iframeUpload = function(url, input, token, callback) {
 
 			var data = e.data;
 
+			try {
+				data = JSON.parse(data);
+			} catch(err) {
+				return callback(err);
+			}
+
 			if(data.statusCode) {
 				data.body = data;
 				onerror('POST', url, data, callback);
