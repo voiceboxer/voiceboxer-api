@@ -6,7 +6,8 @@
   "scripts": {
     "build-test": "browserify -t envify -t brfs test/index.js",
     "test": "npm run build-test -s | testling",
-    "test-chrome": "npm run build-test -s | testling -x 'open -a Google\\ Chrome'"
+    "test-chrome": "npm run build-test -s | testling -x 'open -a Google\\ Chrome'",
+    "test-firefox": "npm run build-test -s | testling -x 'open -a Firefox'"
   },
   "repository": {
     "type": "git",

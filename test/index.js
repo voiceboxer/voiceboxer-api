@@ -184,3 +184,25 @@ test('upload', function(t) {
 		t.end();
 	});
 });
+
+test('upload input', function(t) {
+	var client = create();
+
+	var body = document.body;
+	var input = document.createElement('input');
+	input.setAttribute('type', 'file');
+
+	body.firstChild ? body.insertBefore(input, body.firstChild) : body.appendChild(input);
+
+	input.onchange = function() {
+		client.upload(input, function(err, body) {
+			t.error(err);
+
+			t.equals(body.length, 1);
+			t.ok(body[0].name, 'has name ' + body[0].name);
+			t.ok(body[0].url, 'has url ' + body[0].url);
+
+			t.end();
+		});
+	};
+});

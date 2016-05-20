@@ -1,3 +1,4 @@
+var url = require('url');
 var events = require('events');
 var qs = require('querystring');
 var io = require('socket.io-client');
@@ -16,6 +17,19 @@ var bearer = function(access_token) {
 	return 'Bearer ' + access_token;
 };
 
+var sameOrigin = function(a, b) {
+	a = url.parse(a);
+	b = url.parse(b);
+
+	var port = function(u) {
+		return (u.port || (u.protocol === 'https:' ? '443' : '80'));
+	};
+
+	return (a.protocol === b.protocol &&
+		a.host === b.host &&
+		port(a) === port(b));
+};
+
 var onerror = function(method, url, response, callback) {
 	url = url.split('?')[0];
 
@@ -31,6 +45,85 @@ var onerror = function(method, url, response, callback) {
 			callback(err);
 		}
 	});
+};
+
+var xhrUpload = function(url, body, token, callback) {
+	xhr({
+		method: 'POST',
+		url: url,
+		body: body,
+		headers: {
+			Authorization: bearer(token)
+		}
+	}, function(err, response, body) {
+		if(err) return callback(err);
+		if(onerror('POST', url, response, callback)) return;
+
+		body = JSON.parse(body);
+		callback(null, body);
+	});
+};
+
+var iframeUpload = function(url, input, token, callback) {
+	var name = 'iframe-' + Date.now() + '-' + Math.random();
+
+	var body = document.body;
+	var iframe = document.createElement('iframe');
+	iframe.setAttribute('id', name);
+	iframe.setAttribute('name', name);
+	iframe.style.display = 'none';
+
+	var headers = {
+		Accept: 'application/json',
+		Authorization: bearer(token)
+	};
+
+	url = appendQuery(url, { _headers: JSON.stringify(headers), iframe: true });
+	if(!input.getAttribute('name')) input.setAttribute('name', 'file');
+
+	var form = document.createElement('form');
+	form.setAttribute('method', 'POST');
+	form.setAttribute('action', url);
+	form.setAttribute('enctype', 'multipart/form-data');
+	form.setAttribute('target', name);
+	form.style.display = 'none';
+	form.appendChild(input);
+
+	var onmessage = function(e) {
+		var origin = e.origin || e.originalEvent.origin;
+
+		if(sameOrigin(origin, url)) {
+			cleanup();
+
+			var data = e.data;
+
+			if(data.statusCode) {
+				data.body = data;
+				onerror('POST', url, data, callback);
+			} else {
+				callback(null, data);
+			}
+		}
+	};
+
+	var cleanup = function() {
+		window.removeEventListener('message', onmessage);
+		iframe.onload = null;
+		body.removeChild(form);
+		body.removeChild(iframe);
+	};
+
+	window.addEventListener('message', onmessage, false);
+
+	iframe.onload = function() {
+		// Attached to DOM
+
+		iframe.onload = null;
+		form.submit();
+	};
+
+	body.appendChild(form);
+	body.appendChild(iframe);
 };
 
 var create = function(options) {
@@ -288,20 +381,8 @@ var create = function(options) {
 			var url = urlJoin(fil, '/upload');
 			if(options.filename) url = appendQuery(url, { filename: options.filename });
 
-			xhr({
-				method: 'POST',
-				url: url,
-				body: body,
-				headers: {
-					Authorization: bearer(token.access_token)
-				}
-			}, function(err, response, body) {
-				if(err) return onresponse(err);
-				if(onerror('POST', url, response, onresponse)) return;
-
-				body = JSON.parse(body);
-				onresponse(null, body);
-			});
+			if(body.tagName) iframeUpload(url, body, token.access_token, onresponse);
+			else xhrUpload(url, body, token.access_token, onresponse);
 		});
 	};
 
