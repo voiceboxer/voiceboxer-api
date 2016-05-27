@@ -135,6 +135,7 @@ var iframeUpload = function(url, input, token, callback) {
 var create = function(options) {
 	options = options || {};
 
+	var version = options.version || 'latest';
 	var api = options.api || 'https://api.voiceboxer.com';
 	var air = options.air || 'https://air.voiceboxer.com';
 	var fil = options.fil || 'https://fil.voiceboxer.com';
@@ -162,7 +163,8 @@ var create = function(options) {
 			var query = {
 				_headers: {
 					Accept: 'application/json',
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'X-API-Version': version
 				}
 			};
 
@@ -177,8 +179,9 @@ var create = function(options) {
 			query._headers = JSON.stringify(query._headers);
 			path = appendQuery(path, query);
 			url = urlJoin(api, path);
-		} else if(access_token) {
-			headers = { Authorization: bearer(access_token) };
+		} else {
+			headers = { 'X-API-Version': version };
+			if(access_token) headers.Authorization = bearer(access_token);
 		}
 
 		xhr({

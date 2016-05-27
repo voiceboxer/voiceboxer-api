@@ -102,7 +102,8 @@ test('admin create presentation', function(t) {
 					t.error(err);
 
 					t.equals(body.literalId, presentation.literalId);
-					t.notOk(body.moderator);
+					t.equals(body.moderator.id, user.id);
+					t.notOk(body.moderator.email);
 
 					t.end();
 				});
