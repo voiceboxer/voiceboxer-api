@@ -199,6 +199,7 @@ var create = function(options) {
 	};
 
 	var connect = function(query, options, callback) {
+		var url = air;
 		var connection = {
 			reconnection: false,
 			multiplex: false,
@@ -206,8 +207,9 @@ var create = function(options) {
 		};
 
 		if(options.transports) connection.transports = options.transports;
+		if(options.namespace) url = urlJoin(url, options.namespace);
 
-		var socket = io(air, connection);
+		var socket = io(url, connection);
 
 		var onfinish = function(err) {
 			socket.removeListener('connect', onfinish);

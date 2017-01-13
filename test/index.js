@@ -92,7 +92,10 @@ test('admin create presentation', function(t) {
 					t.ok(reason, 'has reason ' + reason);
 				});
 
-				client.register(presentation.literalId, { status: 'available' }, function(err) {
+				client.register(presentation.literalId, {
+					status: 'available',
+					connection: { namespace: 'participants' }
+				}, function(err) {
 					t.error(err);
 				});
 			});
@@ -142,7 +145,7 @@ test('api error', function(t) {
 test('connect', function(t) {
 	var client = create();
 
-	client.connect(function(err, socket) {
+	client.connect(null, { namespace: 'participants' }, function(err, socket) {
 		t.error(err);
 		t.equals(socket.io.engine.transport.name, 'polling');
 
@@ -158,7 +161,10 @@ test('connect', function(t) {
 test('connect with transport option', function(t) {
 	var client = create();
 
-	client.connect(null, { transports: ['websocket'] }, function(err, socket) {
+	client.connect(null, {
+		transports: ['websocket'],
+		namespace: 'participants'
+	}, function(err, socket) {
 		t.error(err);
 		t.equals(socket.io.engine.transport.name, 'websocket');
 
