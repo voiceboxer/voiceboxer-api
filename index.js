@@ -202,12 +202,16 @@ var create = function(options) {
 		var url = air;
 		var connection = {
 			reconnection: false,
-			multiplex: false,
-			query: qs.stringify(query)
+			multiplex: false
 		};
 
 		if(options.transports) connection.transports = options.transports;
-		if(options.namespace) url = urlJoin(url, options.namespace);
+		if(options.namespace) {
+			url = urlJoin(url, options.namespace);
+			query.nsp = options.namespace;
+		}
+
+		connection.query = qs.stringify(query);
 
 		var socket = io(url, connection);
 
@@ -306,13 +310,17 @@ var create = function(options) {
 				return onerror(err);
 			}
 
-			var updated = 0;
-			var socket = connect({
+			var query = {
 				literalId: literalId,
-				token: token.access_token,
-				status: options.status,
-				language: options.language
-			}, options.connection || {}, callback);
+				access_token: token.access_token
+			};
+
+			if(options.status) query.status = options.status;
+			if(options.language) query.language = options.language;
+
+			var updated = 0;
+			var socket = connect(query,
+				options.connection || {}, callback);
 
 			socket.on('connect', function() {
 				that.emit('connect', literalId);
