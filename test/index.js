@@ -44,7 +44,14 @@ test('authenticate', function(t) {
 		t.ok(body.access_token, 'has access token ' + body.access_token);
 		t.ok(body.refresh_token, 'has refresh token ' + body.refresh_token);
 
-		t.end();
+		var unauthenticatedClient = voiceboxer();
+
+		unauthenticatedClient.get('/users/me', null, { access_token: body.access_token }, function(err, user) {
+			t.error(err);
+			t.ok(user.id, 'has id ' + user.id);
+
+			t.end();
+		});
 	});
 });
 

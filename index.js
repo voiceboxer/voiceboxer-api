@@ -132,13 +132,13 @@ var iframeUpload = function(url, input, token, callback) {
 	body.appendChild(iframe);
 };
 
-var create = function(options) {
-	options = options || {};
+var create = function(config) {
+	config = config || {};
 
-	var version = options.version || 'latest';
-	var api = options.api || 'https://api.voiceboxer.com';
-	var air = options.air || 'https://air.voiceboxer.com';
-	var fil = options.fil || 'https://fil.voiceboxer.com';
+	var version = config.version || 'latest';
+	var api = config.api || 'https://api.voiceboxer.com';
+	var air = config.air || 'https://air.voiceboxer.com';
+	var fil = config.fil || 'https://fil.voiceboxer.com';
 
 	var sockets = {};
 
@@ -149,13 +149,16 @@ var create = function(options) {
 		};
 	};
 
-	var request = function(method, path, access_token, body, callback) {
+	var request = function(method, path, body, options, callback) {
+		if(!options) options = {};
+
 		if(!method) method = 'GET';
 		else method = method.toUpperCase();
 
-		if(body) body = { data: body };
+		if(body) body = options.naked ? body : { data: body };
 		else body = {};
 
+		var access_token = options.access_token;
 		var headers = null;
 		var url = urlJoin(api, path);
 
@@ -231,16 +234,16 @@ var create = function(options) {
 	};
 
 	var authenticate = thunky(function(callback) {
-		if(options.access_token) return callback(null, filter(options));
-		if(!options.client_id || !options.email || !options.password) return callback(null, null);
+		if(config.access_token) return callback(null, filter(config));
+		if(!config.client_id || !config.email || !config.password) return callback(null, null);
 
 		var body = {
-			client_id: options.client_id,
-			email: options.email,
-			password: options.password
+			client_id: config.client_id,
+			email: config.email,
+			password: config.password
 		};
 
-		request('post', '/users/login', null, body, function(err, body) {
+		request('post', '/users/login', body, null, function(err, body) {
 			if(err) return callback(err);
 			callback(null, filter(body));
 		});
@@ -250,12 +253,16 @@ var create = function(options) {
 
 	that.authenticate = authenticate;
 
-	that.request = function(method, path, body, callback) {
-		if(!callback && typeof body === 'function') {
+	that.request = function(method, path, body, options, callback) {
+		if(!callback && typeof options === 'function') {
+			callback = options;
+			options = null;
+		} else if(!callback && !options && typeof body === 'function') {
 			callback = body;
-			body = undefined;
+			body = null;
 		}
 
+		options = options || {};
 		callback = callback || noop;
 
 		var onresponse = function(err) {
@@ -263,10 +270,14 @@ var create = function(options) {
 			callback.apply(null, arguments);
 		};
 
-		authenticate(function(err, token) {
+		var ontoken = function(err, token) {
 			if(err) return onresponse(err);
-			request(method, path, token && token.access_token, body, onresponse);
-		});
+			options = extend(options, { access_token: token && token.access_token });
+			request(method, path, body, options, onresponse);
+		};
+
+		if(options.access_token) ontoken(null, options);
+		else authenticate(ontoken);
 	};
 
 	that.connect = function(query, options, callback) {
@@ -406,8 +417,8 @@ var create = function(options) {
 	};
 
 	['get', 'post', 'put', 'delete', 'patch'].forEach(function(method) {
-		that[method] = function(path, body, callback) {
-			that.request(method, path, body, callback);
+		that[method] = function(path, body, options, callback) {
+			that.request(method, path, body, options, callback);
 		};
 	});
 
@@ -416,8 +427,8 @@ var create = function(options) {
 
 module.exports = create;
 module.exports.defaults = function(defaults) {
-	return function(options) {
-		options = extend(defaults || {}, options);
-		return create(options);
+	return function(config) {
+		config = extend(defaults || {}, config);
+		return create(config);
 	};
 };
