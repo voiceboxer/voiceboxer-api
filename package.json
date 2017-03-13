@@ -1,6 +1,6 @@
 {
   "name": "voiceboxer-api",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "A light-weight javascript wrapper for the VoiceBoxer API",
   "main": "index.js",
   "scripts": {
