@@ -360,6 +360,7 @@ var create = function(config) {
 				'interpreter.switch.request',
 				'interpreter.switch.approve',
 				'interpreter.switch',
+				'booth.config',
 				'language'
 			].forEach(function(name) {
 				socket.on(name, function(message) {
