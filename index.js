@@ -345,7 +345,11 @@ var create = function(config) {
 				that.emit('disconnect', literalId, reason);
 			});
 
-			[
+      socket.on('edit', function(message) {
+        that.emit('presentation.edit', message);
+      });
+
+      [
 				'register',
 				'unregister',
 				'status.start',
