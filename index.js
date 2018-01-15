@@ -345,7 +345,11 @@ var create = function(config) {
 				that.emit('disconnect', literalId, reason);
 			});
 
-			[
+      socket.on('edit', function(message) {
+        that.emit('presentation.edit', message);
+      });
+
+      [
 				'register',
 				'unregister',
 				'status.start',
@@ -360,6 +364,7 @@ var create = function(config) {
 				'interpreter.switch.request',
 				'interpreter.switch.approve',
 				'interpreter.switch',
+				'booth.config',
 				'language'
 			].forEach(function(name) {
 				socket.on(name, function(message) {
