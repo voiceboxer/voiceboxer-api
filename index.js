@@ -345,11 +345,7 @@ var create = function(config) {
 				that.emit('disconnect', literalId, reason);
 			});
 
-      socket.on('edit', function(message) {
-        that.emit('presentation.edit', message);
-      });
-
-      [
+			[
 				'register',
 				'unregister',
 				'status.start',
@@ -364,7 +360,7 @@ var create = function(config) {
 				'interpreter.switch.request',
 				'interpreter.switch.approve',
 				'interpreter.switch',
-				'booth.config',
+				'interpreter.booth.language',
 				'language'
 			].forEach(function(name) {
 				socket.on(name, function(message) {
@@ -384,6 +380,10 @@ var create = function(config) {
 
 			socket.on('chat.channel', function(message) {
 				that.emit('chat.channel', message);
+			});
+
+			socket.on('event.edit', function(message) {
+				that.emit('event.edit', message);
 			});
 
 			sockets[literalId] = socket;
