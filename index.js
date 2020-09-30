@@ -361,7 +361,8 @@ var create = function(config) {
 				'interpreter.switch.approve',
 				'interpreter.switch',
 				'interpreter.booth.language',
-				'language'
+				'language',
+				'poll.new'
 			].forEach(function(name) {
 				socket.on(name, function(message) {
 					that.emit(name, message);
