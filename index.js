@@ -387,6 +387,10 @@ var create = function(config) {
 				that.emit('event.edit', message);
 			});
 
+			socket.on('poll.answer', function(message) {
+        that.emit('poll.answer', message);
+      });
+
 			sockets[literalId] = socket;
 		});
 	};
