@@ -361,8 +361,7 @@ var create = function(config) {
 				'interpreter.switch.approve',
 				'interpreter.switch',
 				'interpreter.booth.language',
-				'language',
-				'poll.new'
+				'language'
 			].forEach(function(name) {
 				socket.on(name, function(message) {
 					that.emit(name, message);
@@ -386,6 +385,10 @@ var create = function(config) {
 			socket.on('event.edit', function(message) {
 				that.emit('event.edit', message);
 			});
+
+			socket.on('poll.publish', function(message) {
+        that.emit('poll.publish', message);
+      });
 
 			socket.on('poll.answer', function(message) {
         that.emit('poll.answer', message);
