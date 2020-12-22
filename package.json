@@ -24,7 +24,7 @@
   "dependencies": {
     "append-query": "^1.1.0",
     "is-ok": "^1.0.1",
-    "socket.io-client": "1.4.6",
+    "socket.io-client": "3.0.4",
     "thunky": "^0.1.0",
     "url-join": "0.0.1",
     "xhr": "^2.0.4",
