@@ -386,6 +386,10 @@ var create = function(config) {
 				that.emit('event.edit', message);
 			});
 
+            socket.on('user.restart', function(message) {
+                that.emit('user.restart', message);
+            });
+
 			socket.on('poll.publish', function(message) {
         that.emit('poll.publish', message);
       });
