@@ -2,3 +2,4 @@ node_modules
 .DS_Store
 test/run-development.sh
 package-lock.json
+.idea
