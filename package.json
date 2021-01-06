@@ -1,6 +1,6 @@
 {
   "name": "voiceboxer-api",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "A light-weight javascript wrapper for the VoiceBoxer API",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "dependencies": {
     "append-query": "^1.1.0",
     "is-ok": "^1.0.1",
-    "socket.io-client": "3.0.4",
+    "socket.io-client": "1.4.6",
     "thunky": "^0.1.0",
     "url-join": "0.0.1",
     "xhr": "^2.0.4",
