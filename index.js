@@ -356,6 +356,7 @@ var create = function(config) {
 				'presenter',
 				'presenter.available',
 				'presenter.slowdown',
+				'presenter.mute',
 				'interpreter.available',
 				'interpreter.switch.request',
 				'interpreter.switch.approve',
